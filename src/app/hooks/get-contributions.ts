@@ -13,6 +13,8 @@ interface PaginationParams {
   startBefore?: string;
   startAfter?: string;
   title?: string;
+  description?: string;
+  owner?: string;
 }
 
 export async function getContributions({
@@ -20,7 +22,9 @@ export async function getContributions({
   limit,
   startBefore,
   startAfter,
-                                         title
+  title,
+  description,
+  owner
 }: PaginationParams): Promise<ContributionsResponse> {
   const params = new URLSearchParams();
 
@@ -30,6 +34,8 @@ export async function getContributions({
   if (startBefore) params.append('startBefore', startBefore);
   if (startAfter) params.append('startAfter', startAfter);
   if (title) params.append('title', title);
+  if (description) params.append('description', description);
+  if (owner) params.append('owner', owner);
 
   const response = await fetch(`http://localhost:8000/contributions/?${params.toString()}`);
 

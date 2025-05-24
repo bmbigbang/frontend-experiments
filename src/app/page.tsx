@@ -8,6 +8,8 @@ import {getContributions} from "@/app/hooks/get-contributions";
 interface HomeProps {
   searchParams: {
     title?: string;
+    description?: string;
+    owner?: string;
     page: string;
     startBefore?: string;
     startAfter?: string;
@@ -17,7 +19,7 @@ interface HomeProps {
 const itemsPerPage = 14;
 
 export default function Home({ searchParams }: HomeProps) {
-  const { title, page, startBefore, startAfter } = searchParams;
+  const { title, description, owner, page, startBefore, startAfter } = searchParams;
   const currentPage = page ? parseInt(page, 10) : 1;
   const skip = (currentPage - 1) * itemsPerPage;
   const { contributions, total } = use(getContributions({
@@ -26,6 +28,8 @@ export default function Home({ searchParams }: HomeProps) {
     startBefore,
     startAfter,
     title,
+    description,
+    owner,
   }));
 
 
