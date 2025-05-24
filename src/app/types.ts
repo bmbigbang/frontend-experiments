@@ -8,7 +8,4 @@ export type Contribution = {
   owner: string;
 }
 
-export type ContributionsResponse = {
-  contributions: Array<Contribution>;
-  total: number;
-}
+

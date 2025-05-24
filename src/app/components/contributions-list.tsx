@@ -1,11 +1,8 @@
-import getContributions from "@/app/hooks/get-contributions";
-import {use} from "react";
+import { Contribution } from "../types";
 
-const ContributionsList = ({ searchTerm }: {
-  searchTerm: string
-}) => {
-  const contributions = use(getContributions(searchTerm));
-
+export default function ContributionsList({ searchTerm, contributions }: {
+  searchTerm: string, contributions: Contribution[]
+}) {
   return <>
     {/* Display a message if the search term is present but no contributions found */}
     {searchTerm && contributions.length === 0 && (
@@ -17,5 +14,3 @@ const ContributionsList = ({ searchTerm }: {
     ))}
   </>
 }
-
-export default ContributionsList;

@@ -19,8 +19,10 @@ export default function SearchBar() {
         type="search"
         name="title"
         placeholder="Search contributions by title..."
-        className="w-100 px-4 py-2 bg-white text-gray-900 placeholder-gray-500 border border-[#0F8B8D] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"        value={inputValue} // Controlled component
-        onChange={(e) => setInputValue(e.target.value)} // Update state on change
+        className={"w-100 px-4 py-2 bg-white text-gray-900 placeholder-gray-500 border border-[#0F8B8D] rounded-md" +
+            " focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
       />
       <button
         type="submit"
