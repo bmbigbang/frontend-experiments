@@ -1,9 +1,9 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import {useState, useEffect, FormEvent} from 'react';
-
-type FilterType = 'title' | 'description' | 'owner' | '';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {FormEvent, useEffect, useState} from 'react';
+import {FilterType} from "@/app/types";
+import SearchDropdown from "@/app/components/search-dropdown";
 
 interface Filter {
   type: FilterType;
@@ -81,16 +81,7 @@ export default function SearchBar() {
     <div className="w-full max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1 flex">
-          <select
-            name="filterType"
-            className="px-3 py-2 bg-white text-gray-900 border-y border-l border-[#0F8B8D] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value as FilterType)}
-          >
-            <option value="title">Title</option>
-            <option value="description">Description</option>
-            <option value="owner">Owner</option>
-          </select>
+          <SearchDropdown filterType={filterType} setFilterType={setFilterType} />
           <input
             name="searchTerm"
             type="text"

@@ -28,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="p-4 bg-[#C6CCB2] shadow">
+        <header className="p-4 bg-[#C6CCB2] shadow min-h-[114px]">
           <SearchBar />
         </header>
         {children}

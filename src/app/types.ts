@@ -9,3 +9,4 @@ export type Contribution = {
 }
 
 
+export type FilterType = 'title' | 'description' | 'owner' | '';
