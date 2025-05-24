@@ -7,7 +7,6 @@ export default function SearchBar() {
   const searchParams = useSearchParams();
   const currentSearchTitle = searchParams.get('title');
 
-
   const [inputValue, setInputValue] = useState(currentSearchTitle || '');
 
   useEffect(() => {
