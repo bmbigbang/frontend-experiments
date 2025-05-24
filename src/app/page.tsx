@@ -21,6 +21,7 @@ export default function Home({ searchParams }: HomeProps) {
   const currentPage = page ? parseInt(page, 10) : 1;
   const skip = (currentPage - 1) * itemsPerPage;
   const { contributions, total } = use(getContributions({
+    limit: itemsPerPage,
     skip,
     startBefore,
     startAfter,

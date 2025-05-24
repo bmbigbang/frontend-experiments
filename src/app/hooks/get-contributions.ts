@@ -8,16 +8,16 @@ interface ContributionsResponse {
 }
 
 interface PaginationParams {
-  skip?: number;
-  limit?: number;
+  skip: number;
+  limit: number;
   startBefore?: string;
   startAfter?: string;
   title?: string;
 }
 
 export async function getContributions({
-  skip = 0,
-  limit = 14,
+  skip,
+  limit,
   startBefore,
   startAfter,
                                          title
