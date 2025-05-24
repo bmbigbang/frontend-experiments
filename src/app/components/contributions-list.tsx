@@ -43,7 +43,7 @@ function getContributionStatus(startTime: string, endTime: string): Contribution
 
 export default function ContributionsList({ contributions }: { contributions: Contribution[] }) {
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {contributions.map((contribution) => {
         const status = getContributionStatus(contribution.startTime, contribution.endTime);
 
