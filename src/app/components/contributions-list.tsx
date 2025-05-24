@@ -1,10 +1,10 @@
-import useContributionsData from "@/app/hooks/use-contributions-data";
+import getContributions from "@/app/hooks/get-contributions";
+import {use} from "react";
 
 const ContributionsList = ({ searchTerm }: {
   searchTerm: string
 }) => {
-
-  const contributions = useContributionsData(searchTerm)
+  const contributions = use(getContributions(searchTerm));
 
   return <>
     {/* Display a message if the search term is present but no contributions found */}
