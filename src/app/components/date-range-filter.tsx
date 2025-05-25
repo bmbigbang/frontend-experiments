@@ -7,9 +7,9 @@ interface DateRangeFilterProps {
 
 export default function DateRangeFilter({ startAfter, endBefore, onDateChange }: DateRangeFilterProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
-      <div>
-        <label htmlFor="startAfter" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">From:</label>
+    <div className="flex flex-row gap-2">
+      <div className="whitespace-nowrap">
+        <label htmlFor="startAfter" className="text-sm text-gray-600 inline-block mr-1">From:</label>
         <input
           id="startAfter"
           type="date"
@@ -18,8 +18,8 @@ export default function DateRangeFilter({ startAfter, endBefore, onDateChange }:
           onChange={(e) => onDateChange('startAfter', e.target.value)}
         />
       </div>
-      <div>
-        <label htmlFor="endBefore" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">To:</label>
+      <div className="whitespace-nowrap">
+        <label htmlFor="endBefore" className="text-sm text-gray-600 inline-block mr-1">To:</label>
         <input
           id="endBefore"
           type="date"

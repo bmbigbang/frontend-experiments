@@ -27,7 +27,7 @@ export default function DateRangePill({ dateRange, setDateRange } : Props) {
             </span>
           <button
               onClick={clearDateRange}
-              className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
+              className="ml-2 text-[#6184d8] hover:text-[#6184d8A4] focus:outline-none"
               aria-label="Remove date range filter"
           >
             <CrossIcon />

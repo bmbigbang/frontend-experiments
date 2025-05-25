@@ -27,8 +27,8 @@ export default function Pagination({ page, itemsPerPage, startAfter, startBefore
     <div className="flex justify-center gap-2 w-full">
       <Link
         href={page > 1 ? createPageUrl(page - 1) : '#'}
-        className={"ml-2 px-4 py-2 bg-blue-500 text-white rounded-md " +
-            (page > 1 ? 'hover:bg-blue-600' : '')}
+        className={"ml-2 px-4 py-2 bg-[#6184d8] text-white rounded-md " +
+            (page > 1 ? 'hover:bg-[#6184d8A4]' : '')}
       >
         Previous
       </Link>
@@ -38,7 +38,7 @@ export default function Pagination({ page, itemsPerPage, startAfter, startBefore
           key={pageNum}
           href={createPageUrl(pageNum)}
           className={`ml-2 px-4 py-2  text-white rounded-md  ${
-            pageNum === page ? 'bg-[#0F8B8D]' : 'bg-blue-500 hover:bg-blue-600'
+            pageNum === page ? 'bg-[#0F8B8D]' : 'bg-[#6184d8] hover:bg-[#6184d8A4]'
           }`}
         >
           {pageNum}
@@ -47,8 +47,8 @@ export default function Pagination({ page, itemsPerPage, startAfter, startBefore
 
       <Link
         href={page < totalPages ? createPageUrl(page + 1) : '#'}
-        className={"ml-2 px-4 py-2 bg-blue-500 text-white rounded-md " +
-          (page < totalPages ? 'hover:bg-blue-600' : '')}
+        className={"ml-2 px-4 py-2 bg-[#6184d8] text-white rounded-md " +
+          (page < totalPages ? 'hover:bg-[#6184d8A4]' : '')}
 
       >
         Next

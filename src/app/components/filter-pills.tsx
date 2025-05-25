@@ -38,7 +38,7 @@ export default function FilterPills({ activeFilters, setActiveFilters }: Props) 
           <span>{filter.value}</span>
           <button
               onClick={() => removeFilter(filter)}
-              className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
+              className="ml-2 text-[#6184d8] hover:text-[#6184d8A4] focus:outline-none"
               aria-label={`Remove ${filter.type} filter`}
           >
             <CrossIcon />

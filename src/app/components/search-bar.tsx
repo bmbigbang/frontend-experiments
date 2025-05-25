@@ -33,6 +33,10 @@ export default function SearchBar() {
     startAfter: currentStartAfter,
     endBefore: currentEndBefore
   });
+  const [pendingDateRange, setPendingDateRange] = useState<DateRangeFilter>({
+    startAfter: currentStartAfter,
+    endBefore: currentEndBefore
+  });
 
   // Initialize active filters from URL parameters
   useEffect(() => {
@@ -43,6 +47,10 @@ export default function SearchBar() {
     setActiveFilters(filters);
     
     setDateRange({
+      startAfter: currentStartAfter,
+      endBefore: currentEndBefore
+    });
+    setPendingDateRange({ // Initialize pending date range as well
       startAfter: currentStartAfter,
       endBefore: currentEndBefore
     });
@@ -77,24 +85,31 @@ export default function SearchBar() {
   };
 
   const handleDateChange = (field: keyof DateRangeFilter, value: string) => {
-    const newDateRange = { 
-      ...dateRange, 
-      [field]: value 
-    };
-    
-    // Update state
-    setDateRange(newDateRange);
-    
+    setPendingDateRange(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const applyDateRangeFilters = () => {
     // Create a new URLSearchParams object from the current search params
     const params = new URLSearchParams(searchParams.toString());
-    
-    // Update URL params for date filtering
-    if (value) {
-      params.set(field, value);
+
+    // Update URL params for date filtering based on pendingDateRange
+    if (pendingDateRange.startAfter) {
+      params.set('startAfter', pendingDateRange.startAfter);
     } else {
-      params.delete(field);
+      params.delete('startAfter');
+    }
+    if (pendingDateRange.endBefore) {
+      params.set('endBefore', pendingDateRange.endBefore);
+    } else {
+      params.delete('endBefore');
     }
     
+    // Update the actual dateRange state
+    setDateRange(pendingDateRange);
+
     // Navigate to the new URL which will trigger data fetch
     router.push(`/?${params.toString()}`);
   };
@@ -115,8 +130,8 @@ export default function SearchBar() {
         </form>
         
         <DateRangeFilter
-          startAfter={dateRange.startAfter}
-          endBefore={dateRange.endBefore}
+          startAfter={pendingDateRange.startAfter}
+          endBefore={pendingDateRange.endBefore}
           onDateChange={handleDateChange}
         />
       </div>
@@ -133,12 +148,20 @@ export default function SearchBar() {
               router.push('/');
               setActiveFilters([]);
               setDateRange({ startAfter: '', endBefore: '' });
+              setPendingDateRange({ startAfter: '', endBefore: '' });
             }}
             className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-red-100 text-red-800 hover:bg-red-200 transition-colors"
           >
             Clear all filters <div className="pl-1"><CrossIcon /></div>
           </button>
         )}
+
+        <button
+          onClick={applyDateRangeFilters}
+          className="ml-auto px-4 py-2 bg-[#6184d8] text-white rounded-md hover:bg-[#6184d8A4] transition-colors cursor-pointer"
+        >
+          Apply Filters
+        </button>
       </div>
     </div>
   );
