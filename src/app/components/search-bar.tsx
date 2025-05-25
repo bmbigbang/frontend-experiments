@@ -6,6 +6,7 @@ import {FilterType} from "@/app/types";
 import SearchDropdown from "@/app/components/search-dropdown";
 import DateRangeFilter from "@/app/components/date-range-filter";
 import DateRangePill from "@/app/components/date-range-pill";
+import CrossIcon from "@/app/components/cross-icon";
 
 interface Filter {
   type: FilterType;
@@ -154,9 +155,7 @@ export default function SearchBar() {
               className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
               aria-label={`Remove ${filter.type} filter`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
+              <CrossIcon />
             </button>
           </div>
         ))}
@@ -172,7 +171,7 @@ export default function SearchBar() {
             }}
             className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-red-100 text-red-800 hover:bg-red-200 transition-colors"
           >
-            Clear all filters
+            Clear all filters <div className="pl-1"><CrossIcon /></div>
           </button>
         )}
       </div>
