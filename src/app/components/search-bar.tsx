@@ -11,8 +11,8 @@ interface Filter {
 }
 
 interface DateRangeFilter {
-  startDate: string;
-  endDate: string;
+  startAfter: string;
+  endBefore: string;
 }
 
 export default function SearchBar() {
@@ -23,16 +23,16 @@ export default function SearchBar() {
   const currentTitle = searchParams.get('title') || '';
   const currentDescription = searchParams.get('description') || '';
   const currentOwner = searchParams.get('owner') || '';
-  const currentStartDate = searchParams.get('startDate') || '';
-  const currentEndDate = searchParams.get('endDate') || '';
+  const currentStartAfter = searchParams.get('startAfter') || '';
+  const currentEndBefore = searchParams.get('endBefore') || '';
 
   // State for the search input and filter type
   const [inputValue, setInputValue] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('title');
   const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
   const [dateRange, setDateRange] = useState<DateRangeFilter>({
-    startDate: currentStartDate,
-    endDate: currentEndDate
+    startAfter: currentStartAfter,
+    endBefore: currentEndBefore
   });
 
   // Initialize active filters from URL parameters
@@ -44,19 +44,21 @@ export default function SearchBar() {
     setActiveFilters(filters);
     
     setDateRange({
-      startDate: currentStartDate,
-      endDate: currentEndDate
+      startAfter: currentStartAfter,
+      endBefore: currentEndBefore
     });
-  }, [currentTitle, currentDescription, currentOwner, currentStartDate, currentEndDate]);
+  }, [currentTitle, currentDescription, currentOwner, currentStartAfter, currentEndBefore]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     
+    if (inputValue.trim() === '') return;
+    
     // Create a new URLSearchParams object from the current search params
     const params = new URLSearchParams(searchParams.toString());
     
-    // Add the new filter if input is not empty
-    if (inputValue.trim() !== '' && filterType) {
+    // Add the new filter
+    if (filterType) {
       params.set(filterType, inputValue);
       
       // Update the active filters
@@ -66,25 +68,36 @@ export default function SearchBar() {
         const filtered = prev.filter(filter => filter.type !== filterType);
         return [...filtered, newFilter];
       });
-      
-      // Reset the input
-      setInputValue('');
     }
     
-    // Add date range filters if they exist
-    if (dateRange.startDate) {
-      params.set('startDate', dateRange.startDate);
-    } else {
-      params.delete('startDate');
-    }
-    
-    if (dateRange.endDate) {
-      params.set('endDate', dateRange.endDate);
-    } else {
-      params.delete('endDate');
-    }
+    // Reset the input
+    setInputValue('');
     
     // Navigate to the new URL
+    router.push(`/?${params.toString()}`);
+  };
+
+  const handleDateChange = (field: keyof DateRangeFilter, value: string) => {
+    // Create new date range state
+    const newDateRange = { 
+      ...dateRange, 
+      [field]: value 
+    };
+    
+    // Update state
+    setDateRange(newDateRange);
+    
+    // Create a new URLSearchParams object from the current search params
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Update URL params for date filtering
+    if (value) {
+      params.set(field, value);
+    } else {
+      params.delete(field);
+    }
+    
+    // Navigate to the new URL which will trigger data fetch
     router.push(`/?${params.toString()}`);
   };
 
@@ -106,16 +119,16 @@ export default function SearchBar() {
 
   const clearDateRange = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.delete('startDate');
-    params.delete('endDate');
-    setDateRange({ startDate: '', endDate: '' });
+    params.delete('startAfter');
+    params.delete('endBefore');
+    setDateRange({ startAfter: '', endBefore: '' });
     router.push(`/?${params.toString()}`);
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-        <div className="flex-1 flex">
+      <div className="flex flex-col sm:flex-row gap-2">
+        <form onSubmit={handleSubmit} className="flex-1 flex">
           <SearchDropdown filterType={filterType} setFilterType={setFilterType} />
           <input
             name="searchTerm"
@@ -125,34 +138,34 @@ export default function SearchBar() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
-        </div>
+        </form>
         
         {/* Date range selector */}
         <div className="flex gap-2 items-center">
           <div className="flex flex-col sm:flex-row gap-2">
-            <div className="whitespace-nowrap">
-              <label htmlFor="startDate" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">From:</label>
+            <div>
+              <label htmlFor="startAfter" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">From:</label>
               <input
-                id="startDate"
+                id="startAfter"
                 type="date"
                 className="px-2 py-2 bg-white text-gray-900 border border-[#0F8B8D] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"
-                value={dateRange.startDate}
-                onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                value={dateRange.startAfter}
+                onChange={(e) => handleDateChange('startAfter', e.target.value)}
               />
             </div>
-            <div className="whitespace-nowrap">
-              <label htmlFor="endDate" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">To:</label>
+            <div>
+              <label htmlFor="endBefore" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">To:</label>
               <input
-                id="endDate"
+                id="endBefore"
                 type="date"
                 className="px-2 py-2 bg-white text-gray-900 border border-[#0F8B8D] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"
-                value={dateRange.endDate}
-                onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                value={dateRange.endBefore}
+                onChange={(e) => handleDateChange('endBefore', e.target.value)}
               />
             </div>
           </div>
         </div>
-      </form>
+      </div>
       
       {/* Active filters pills */}
       <div className="mt-3 flex flex-wrap gap-2">
@@ -176,10 +189,14 @@ export default function SearchBar() {
         ))}
         
         {/* Date range filter pill */}
-        {(dateRange.startDate || dateRange.endDate) && (
+        {(dateRange.startAfter || dateRange.endBefore) && (
           <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
             <span className="font-medium mr-1">Date range:</span>
-            <span>{dateRange.startDate || 'Any'} to {dateRange.endDate || 'Any'}</span>
+            <span>
+              {dateRange.startAfter ? `After ${dateRange.startAfter}` : ''}
+              {dateRange.startAfter && dateRange.endBefore ? ' & ' : ''}
+              {dateRange.endBefore ? `Before ${dateRange.endBefore}` : ''}
+            </span>
             <button 
               onClick={clearDateRange}
               className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
@@ -192,12 +209,12 @@ export default function SearchBar() {
           </div>
         )}
         
-        {(activeFilters.length > 0 || dateRange.startDate || dateRange.endDate) && (
+        {(activeFilters.length > 0 || dateRange.startAfter || dateRange.endBefore) && (
           <button
             onClick={() => {
               router.push('/');
               setActiveFilters([]);
-              setDateRange({ startDate: '', endDate: '' });
+              setDateRange({ startAfter: '', endBefore: '' });
             }}
             className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-red-100 text-red-800 hover:bg-red-200 transition-colors"
           >

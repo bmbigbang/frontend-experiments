@@ -10,7 +10,7 @@ interface ContributionsResponse {
 interface PaginationParams {
   skip: number;
   limit: number;
-  startBefore?: string;
+  endBefore?: string;
   startAfter?: string;
   title?: string;
   description?: string;
@@ -20,7 +20,7 @@ interface PaginationParams {
 export async function getContributions({
   skip,
   limit,
-  startBefore,
+  endBefore,
   startAfter,
   title,
   description,
@@ -31,7 +31,7 @@ export async function getContributions({
   params.append('skip', skip.toString());
   params.append('limit', limit.toString());
 
-  if (startBefore) params.append('startBefore', startBefore);
+  if (endBefore) params.append('endBefore', endBefore);
   if (startAfter) params.append('startAfter', startAfter);
   if (title) params.append('title', title);
   if (description) params.append('description', description);

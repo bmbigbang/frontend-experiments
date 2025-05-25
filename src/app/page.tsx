@@ -11,7 +11,7 @@ interface HomeProps {
     description?: string;
     owner?: string;
     page: string;
-    startBefore?: string;
+    endBefore?: string;
     startAfter?: string;
   };
 }
@@ -19,13 +19,13 @@ interface HomeProps {
 const itemsPerPage = 14;
 
 export default function Home({ searchParams }: HomeProps) {
-  const { title, description, owner, page, startBefore, startAfter } = searchParams;
+  const { title, description, owner, page, endBefore, startAfter } = searchParams;
   const currentPage = page ? parseInt(page, 10) : 1;
   const skip = (currentPage - 1) * itemsPerPage;
   const { contributions, total } = use(getContributions({
     limit: itemsPerPage,
     skip,
-    startBefore,
+    endBefore,
     startAfter,
     title,
     description,
