@@ -40,7 +40,7 @@ export async function getContributions({
   const response = await fetch(`http://localhost:8000/contributions/?${params.toString()}`);
 
   if (!response.ok) {
-    throw new Error("Unexpected error occurred when fetching contributions");
+    throw new Error("Unsuccessful response when fetching contributions");
   }
 
   return await response.json();

@@ -5,21 +5,19 @@ import Pagination from "@/app/components/pagination";
 import {getContributions} from "@/app/hooks/get-contributions";
 
 
-interface HomeProps {
-  searchParams: {
-    title?: string;
-    description?: string;
-    owner?: string;
-    page: string;
-    endBefore?: string;
-    startAfter?: string;
-  };
+type SearchParams = {
+  title?: string;
+  description?: string;
+  owner?: string;
+  page?: string;
+  endBefore?: string;
+  startAfter?: string;
 }
 
 const itemsPerPage = 14;
 
-export default function Home({ searchParams }: HomeProps) {
-  const { title, description, owner, page, endBefore, startAfter } = searchParams;
+export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const { title, description, owner, page, endBefore, startAfter } = (use(searchParams)) as SearchParams;
   const currentPage = page ? parseInt(page, 10) : 1;
   const skip = (currentPage - 1) * itemsPerPage;
   const { contributions, total } = use(getContributions({

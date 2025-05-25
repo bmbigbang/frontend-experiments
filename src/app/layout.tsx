@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SearchBar from "@/app/components/search-bar";
+import Spinner from "@/app/components/spinner";
+import {Suspense} from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header className="p-4 bg-[#C6CCB2] shadow min-h-[114px]">
-          <SearchBar />
+          <Suspense fallback={<Spinner />}>
+            <SearchBar />
+          </Suspense>
         </header>
         {children}
       </body>
