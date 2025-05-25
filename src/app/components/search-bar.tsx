@@ -4,13 +4,15 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {FormEvent, useEffect, useState} from 'react';
 import {FilterType} from "@/app/types";
 import SearchDropdown from "@/app/components/search-dropdown";
+import DateRangeFilter from "@/app/components/date-range-filter";
+import DateRangePill from "@/app/components/date-range-pill";
 
 interface Filter {
   type: FilterType;
   value: string;
 }
 
-interface DateRangeFilter {
+export interface DateRangeFilter {
   startAfter: string;
   endBefore: string;
 }
@@ -64,7 +66,7 @@ export default function SearchBar() {
       // Update the active filters
       const newFilter: Filter = { type: filterType, value: inputValue };
       setActiveFilters(prev => {
-        // Remove existing filter of same type if it exists
+        // Remove an existing filter of the same type if it exists
         const filtered = prev.filter(filter => filter.type !== filterType);
         return [...filtered, newFilter];
       });
@@ -78,7 +80,6 @@ export default function SearchBar() {
   };
 
   const handleDateChange = (field: keyof DateRangeFilter, value: string) => {
-    // Create new date range state
     const newDateRange = { 
       ...dateRange, 
       [field]: value 
@@ -117,14 +118,6 @@ export default function SearchBar() {
     router.push(`/?${params.toString()}`);
   };
 
-  const clearDateRange = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('startAfter');
-    params.delete('endBefore');
-    setDateRange({ startAfter: '', endBefore: '' });
-    router.push(`/?${params.toString()}`);
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row gap-2">
@@ -140,31 +133,11 @@ export default function SearchBar() {
           />
         </form>
         
-        {/* Date range selector */}
-        <div className="flex gap-2 items-center">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div>
-              <label htmlFor="startAfter" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">From:</label>
-              <input
-                id="startAfter"
-                type="date"
-                className="px-2 py-2 bg-white text-gray-900 border border-[#0F8B8D] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"
-                value={dateRange.startAfter}
-                onChange={(e) => handleDateChange('startAfter', e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="endBefore" className="text-sm text-gray-600 block sm:inline-block sm:mr-1">To:</label>
-              <input
-                id="endBefore"
-                type="date"
-                className="px-2 py-2 bg-white text-gray-900 border border-[#0F8B8D] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0]"
-                value={dateRange.endBefore}
-                onChange={(e) => handleDateChange('endBefore', e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+        <DateRangeFilter
+          startAfter={dateRange.startAfter}
+          endBefore={dateRange.endBefore}
+          onDateChange={handleDateChange}
+        />
       </div>
       
       {/* Active filters pills */}
@@ -188,26 +161,7 @@ export default function SearchBar() {
           </div>
         ))}
         
-        {/* Date range filter pill */}
-        {(dateRange.startAfter || dateRange.endBefore) && (
-          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-            <span className="font-medium mr-1">Date range:</span>
-            <span>
-              {dateRange.startAfter ? `After ${dateRange.startAfter}` : ''}
-              {dateRange.startAfter && dateRange.endBefore ? ' & ' : ''}
-              {dateRange.endBefore ? `Before ${dateRange.endBefore}` : ''}
-            </span>
-            <button 
-              onClick={clearDateRange}
-              className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
-              aria-label="Remove date range filter"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        )}
+        <DateRangePill dateRange={dateRange} setDateRange={setDateRange} />
         
         {(activeFilters.length > 0 || dateRange.startAfter || dateRange.endBefore) && (
           <button
