@@ -2,9 +2,9 @@ import {FilterType} from "@/app/types";
 
 
 export default function SearchDropdown({ filterType, setFilterType }: { filterType: FilterType, setFilterType: (type: FilterType) => void }) {
-  return <div className="relative inline-flex items-center">
+  return <div className=" relative inline-flex items-center">
     <select
-        className="pl-3 pr-8 py-2 bg-white text-gray-900 border-y border-l border-[#0F8B8D] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0] appearance-none"
+        className="p-2 pr-6 bg-white text-gray-900 border-y border-l border-[#0F8B8D] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#0F8B8DA0] appearance-none"
         value={filterType}
         onChange={(e) => setFilterType(e.target.value as FilterType)}
     >

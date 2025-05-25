@@ -152,13 +152,6 @@ export default function SearchBar() {
             </div>
           </div>
         </div>
-        
-        <button
-          type="submit"
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-        >
-          Apply
-        </button>
       </form>
       
       {/* Active filters pills */}
