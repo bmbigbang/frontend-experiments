@@ -56,32 +56,51 @@ export default function SearchBar() {
     });
   }, [currentTitle, currentDescription, currentOwner, currentStartAfter, currentEndBefore]);
 
+  const applyFilters = () => {
+    const params = new URLSearchParams();
+
+    // Add text-based filters from activeFilters state
+    activeFilters.forEach(filter => {
+      params.set(filter.type, filter.value);
+    });
+
+    // Add the current input value as a filter if it exists
+    if (inputValue.trim() !== '') {
+      params.set(filterType, inputValue.trim());
+    }
+
+    // Add date range filters
+    if (pendingDateRange.startAfter) {
+      params.set('startAfter', pendingDateRange.startAfter);
+    }
+    if (pendingDateRange.endBefore) {
+      params.set('endBefore', pendingDateRange.endBefore);
+    }
+    
+    // Update the actual dateRange state
+    setDateRange(pendingDateRange);
+
+    // Navigate to the new URL
+    router.push(`/?${params.toString()}`);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     
     if (inputValue.trim() === '') return;
     
-    // Create a new URLSearchParams object from the current search params
-    const params = new URLSearchParams(searchParams.toString());
-    
-    // Add the new filter
-    if (filterType) {
-      params.set(filterType, inputValue);
-      
-      // Update the active filters
-      const newFilter: Filter = { type: filterType, value: inputValue };
-      setActiveFilters(prev => {
-        // Remove an existing filter of the same type if it exists
-        const filtered = prev.filter(filter => filter.type !== filterType);
-        return [...filtered, newFilter];
-      });
-    }
+    // Update the active filters state with the new input,
+    // and let applyFilters handle the URL navigation.
+    const newFilter: Filter = { type: filterType, value: inputValue.trim() };
+    setActiveFilters(prev => {
+      const filtered = prev.filter(filter => filter.type !== filterType);
+      return [...filtered, newFilter];
+    });
     
     // Reset the input
     setInputValue('');
     
-    // Navigate to the new URL
-    router.push(`/?${params.toString()}`);
+    applyFilters();
   };
 
   const handleDateChange = (field: keyof DateRangeFilter, value: string) => {
@@ -89,29 +108,6 @@ export default function SearchBar() {
       ...prev,
       [field]: value
     }));
-  };
-
-  const applyDateRangeFilters = () => {
-    // Create a new URLSearchParams object from the current search params
-    const params = new URLSearchParams(searchParams.toString());
-
-    // Update URL params for date filtering based on pendingDateRange
-    if (pendingDateRange.startAfter) {
-      params.set('startAfter', pendingDateRange.startAfter);
-    } else {
-      params.delete('startAfter');
-    }
-    if (pendingDateRange.endBefore) {
-      params.set('endBefore', pendingDateRange.endBefore);
-    } else {
-      params.delete('endBefore');
-    }
-    
-    // Update the actual dateRange state
-    setDateRange(pendingDateRange);
-
-    // Navigate to the new URL which will trigger data fetch
-    router.push(`/?${params.toString()}`);
   };
 
   return (
@@ -157,7 +153,7 @@ export default function SearchBar() {
         )}
 
         <button
-          onClick={applyDateRangeFilters}
+          onClick={applyFilters}
           className="ml-auto px-4 py-2 bg-[#6184d8] text-white rounded-md hover:bg-[#6184d8A4] transition-colors cursor-pointer"
         >
           Apply Filters
