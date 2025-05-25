@@ -112,7 +112,7 @@ export default function SearchBar() {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
         <form onSubmit={handleSubmit} className="flex-1 flex">
           <SearchDropdown filterType={filterType} setFilterType={setFilterType} />
           <input
