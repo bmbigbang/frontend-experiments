@@ -10,3 +10,8 @@ export type Contribution = {
 
 
 export type FilterType = 'title' | 'description' | 'owner' | '';
+
+export interface Filter {
+  type: FilterType;
+  value: string;
+}

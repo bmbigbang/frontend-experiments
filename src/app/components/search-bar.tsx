@@ -2,16 +2,12 @@
 
 import {useRouter, useSearchParams} from 'next/navigation';
 import {FormEvent, useEffect, useState} from 'react';
-import {FilterType} from "@/app/types";
+import {Filter, FilterType} from "@/app/types";
 import SearchDropdown from "@/app/components/search-dropdown";
 import DateRangeFilter from "@/app/components/date-range-filter";
 import DateRangePill from "@/app/components/date-range-pill";
 import CrossIcon from "@/app/components/cross-icon";
-
-interface Filter {
-  type: FilterType;
-  value: string;
-}
+import FilterPills from "@/app/components/filter-pills";
 
 export interface DateRangeFilter {
   startAfter: string;
@@ -103,22 +99,6 @@ export default function SearchBar() {
     router.push(`/?${params.toString()}`);
   };
 
-  const removeFilter = (filterToRemove: Filter) => {
-    // Create a new URLSearchParams object from the current search params
-    const params = new URLSearchParams(searchParams.toString());
-    
-    // Remove the filter
-    params.delete(filterToRemove.type);
-    
-    // Update the active filters
-    setActiveFilters(prev => 
-      prev.filter(filter => filter.type !== filterToRemove.type)
-    );
-    
-    // Navigate to the new URL
-    router.push(`/?${params.toString()}`);
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row gap-2">
@@ -143,22 +123,7 @@ export default function SearchBar() {
       
       {/* Active filters pills */}
       <div className="mt-3 flex flex-wrap gap-2">
-        {activeFilters.length > 0 && activeFilters.map((filter, index) => (
-          <div 
-            key={index}
-            className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
-          >
-            <span className="font-medium mr-1 capitalize">{filter.type}:</span>
-            <span>{filter.value}</span>
-            <button 
-              onClick={() => removeFilter(filter)}
-              className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
-              aria-label={`Remove ${filter.type} filter`}
-            >
-              <CrossIcon />
-            </button>
-          </div>
-        ))}
+        <FilterPills activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
         
         <DateRangePill dateRange={dateRange} setDateRange={setDateRange} />
         
