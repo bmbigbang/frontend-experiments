@@ -175,7 +175,7 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
         />
 
         {placesError && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-[1000]">
+            <div className="pointer-events-none absolute inset-0 flex place-items-start justify-center z-[1000] pt-[9%]">
               <div className="pointer-events-auto rounded-md bg-red-600/90 px-4 py-2 text-sm font-medium text-white shadow-lg">
                 {placesError}
               </div>
