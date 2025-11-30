@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, TileLayer } from "leaflet";
-import type { WeatherLayerConfig } from "../services/types";
+import { WeatherLayerConfig, OpenWeatherLayerId } from "@/app/services/types";
+import { WeatherLayerLegend } from "./WeatherLayerLegend";
 import {
   addOpenWeatherLayers,
   removeOpenWeatherLayers,
@@ -32,7 +33,7 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const weatherTileLayersRef = useRef<TileLayer[]>([]);
 
-  const [activeLayerIds, setActiveLayerIds] = useState<string[]>([]);
+  const [activeLayerIds, setActiveLayerIds] = useState<OpenWeatherLayerId[]>([]);
 
   useEffect(() => {
     if (!mapContainerRef.current || typeof window === "undefined") return;
@@ -131,31 +132,29 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
     })();
   }, [weatherLayers, activeLayerIds]);
 
-  const handleToggleLayer = (id: string) => {
-    setActiveLayerIds((current) =>
-        current.includes(id)
-            ? current.filter((layerId) => layerId !== id)
-            : [...current, id],
-    );
-  };
+  const handleToggleLayer = useCallback(
+      (layerId: OpenWeatherLayerId) => {
+        setActiveLayerIds((prev) =>
+            prev.includes(layerId)
+                ? prev.filter((id) => id !== layerId)
+                : [...prev, layerId],
+        );
+      },
+      [],
+  );
 
   return (
       <div style={{ width }}>
 
-        {weatherLayers.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-3">
-              {weatherLayers.map((layer) => (
-                  <label key={layer.id} className="flex items-center gap-1 text-sm">
-                    <input
-                        type="checkbox"
-                        checked={activeLayerIds.includes(layer.id)}
-                        onChange={() => handleToggleLayer(layer.id)}
-                    />
-                    <span>{layer.label}</span>
-                  </label>
-              ))}
-            </div>
-        )}
+        <div className="pointer-events-none left-1/2 flex pb-8 justify-center">
+          <div className="pointer-events-auto">
+            <WeatherLayerLegend
+                layers={weatherLayers}
+                activeLayerIds={activeLayerIds}
+                onToggleLayer={handleToggleLayer}
+            />
+          </div>
+        </div>
 
         <div
             ref={mapContainerRef}
