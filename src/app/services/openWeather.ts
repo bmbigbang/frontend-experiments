@@ -1,16 +1,10 @@
-import { WeatherLayerConfig } from "@/app/services/types";
+import { openWeatherLayerId, OpenWeatherLayerId, OpenWeatherLayerName, WeatherLayerConfig } from "@/app/services/types";
 import type { Map as LeafletMap, TileLayer } from "leaflet";
 
 
-const OPENWEATHER_LAYERS = [
-  "precipitation_new",
-  "pressure_new",
-  "wind_new",
-] as const;
-
-export async function getOpenWeatherLayerConfigs(): Promise<
-    WeatherLayerConfig[]
-> {
+export async function getOpenWeatherLayerConfigs(
+    layerIds: readonly OpenWeatherLayerId[] = openWeatherLayerId,
+): Promise<WeatherLayerConfig[]> {
   const apiKey = process.env.OPENWEATHER_API_KEY;
 
   if (!apiKey) {
@@ -19,26 +13,14 @@ export async function getOpenWeatherLayerConfigs(): Promise<
     );
   }
 
-  const testUrl = `https://tile.openweathermap.org/map/${OPENWEATHER_LAYERS[0]}/0/0/0.png?appid=${apiKey}`;
-  const response = await fetch(testUrl, { method: "GET" });
-
-  if (!response.ok) {
-    console.error(
-        "Failed to validate OpenWeather API key",
-        response.status,
-        response.statusText,
-    );
-  }
-
-  const weatherLayers: WeatherLayerConfig[] = OPENWEATHER_LAYERS.map(
+  return layerIds.map(
       (layerId) => ({
         id: layerId,
-        urlTemplate: `https://tile.openweathermap.org/map/${layerId}/{z}/{x}/{y}.png?appid=${apiKey}`,
-        opacity: 0.6,
+        urlTemplate: `https://tile.openweathermap.org/map/${ layerId }/{z}/{x}/{y}.png?appid=${ apiKey }`,
+        opacity: 0.8,
+        label: OpenWeatherLayerName[layerId]
       }),
   );
-
-  return weatherLayers;
 }
 
 

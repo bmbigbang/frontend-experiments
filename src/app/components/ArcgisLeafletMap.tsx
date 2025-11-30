@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, TileLayer } from "leaflet";
 import type { WeatherLayerConfig } from "../services/types";
 import {
@@ -24,13 +24,15 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
   height = "400px",
   width = "100%",
   center = [37.7749, -122.4194], // San Francisco
-  zoom = 6,
+  zoom = 5,
   basemapId = "ArcGIS:Streets",
   weatherLayers = [],
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const weatherTileLayersRef = useRef<TileLayer[]>([]);
+
+  const [activeLayerIds, setActiveLayerIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!mapContainerRef.current || typeof window === "undefined") return;
@@ -45,7 +47,7 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
         import("esri-leaflet-vector"),
       ]);
       const L = leafletModule.default ?? leafletModule;
-      const { vectorBasemapLayer } = esriVectorModule as typeof import("esri-leaflet-vector");
+      const { vectorBasemapLayer } = esriVectorModule;
 
       if (!mapContainerRef.current || isCancelled) return;
 
@@ -70,20 +72,10 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
         apiKey,
       }).addTo(map);
 
-      if (weatherLayers.length > 0) {
-        weatherTileLayersRef.current = addOpenWeatherLayers(
-            map,
-            weatherLayers,
-            (urlTemplate, opacity) =>
-                L.tileLayer(urlTemplate, {
-                  opacity,
-                  attribution:
-                      '&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>',
-                }) as TileLayer,
-        );
-      }
-
       map.zoomControl.setPosition("topright");
+
+      // set default active layers
+      setActiveLayerIds(["precipitation_new", "clouds_new"])
     })();
 
     return () => {
@@ -99,16 +91,80 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [center?.[0], center?.[1], zoom, basemapId, weatherLayers]);
+  }, [center?.[0], center?.[1], zoom, basemapId]);
+
+  // Effect to apply OpenWeather layers whenever:
+  // - the map is ready
+  // - the list of available weatherLayers changes
+  // - the activeLayerIds state changes
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    // Clear existing OpenWeather tile layers from the map
+    removeOpenWeatherLayers(map, weatherTileLayersRef.current);
+    weatherTileLayersRef.current = [];
+
+    if (!weatherLayers.length || !activeLayerIds.length) return;
+
+    (async () => {
+      const leafletModule = await import("leaflet");
+      const L = leafletModule.default ?? leafletModule;
+
+      // Only add tile layers for the currently active IDs
+      const activeConfigs = weatherLayers.filter((layer) =>
+          activeLayerIds.includes(layer.id),
+      );
+
+      if (!activeConfigs.length) return;
+
+      weatherTileLayersRef.current = addOpenWeatherLayers(
+          map,
+          activeConfigs,
+          (urlTemplate, opacity) =>
+              L.tileLayer(urlTemplate, {
+                opacity,
+                attribution:
+                    '&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>',
+              }) as TileLayer,
+      );
+    })();
+  }, [weatherLayers, activeLayerIds]);
+
+  const handleToggleLayer = (id: string) => {
+    setActiveLayerIds((current) =>
+        current.includes(id)
+            ? current.filter((layerId) => layerId !== id)
+            : [...current, id],
+    );
+  };
 
   return (
-      <div
-          ref={mapContainerRef}
-          style={{
-            height,
-            width,
-          }}
-      />
+      <div style={{ width }}>
+
+        {weatherLayers.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-3">
+              {weatherLayers.map((layer) => (
+                  <label key={layer.id} className="flex items-center gap-1 text-sm">
+                    <input
+                        type="checkbox"
+                        checked={activeLayerIds.includes(layer.id)}
+                        onChange={() => handleToggleLayer(layer.id)}
+                    />
+                    <span>{layer.label}</span>
+                  </label>
+              ))}
+            </div>
+        )}
+
+        <div
+            ref={mapContainerRef}
+            style={{
+              height,
+              width: "100%",
+            }}
+        />
+      </div>
   );
 };
 
