@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { Map as LeafletMap, TileLayer } from "leaflet";
-import { WeatherLayerConfig, OpenWeatherLayerId } from "@/app/services/types";
+import type { Map as LeafletMap, TileLayer, LayerGroup } from "leaflet";
+import { WeatherLayerConfig, OpenWeatherLayerId, MapBoundingBox } from "@/app/types";
 import { WeatherLayerLegend } from "./WeatherLayerLegend";
 import {
   addOpenWeatherLayers,
   removeOpenWeatherLayers,
 } from "../services/openWeather";
+import { usePlaces, updateBounds } from "@/app/hooks/usePlaces";
 
 type ArcgisLeafletMapProps = {
   height?: string;
@@ -25,15 +26,19 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
   height = "400px",
   width = "100%",
   center = [37.7749, -122.4194], // San Francisco
-  zoom = 5,
+  zoom = 14,
   basemapId = "ArcGIS:Streets",
   weatherLayers = [],
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const weatherTileLayersRef = useRef<TileLayer[]>([]);
+  const placesLayerRef = useRef<LayerGroup | null>(null);
 
   const [activeLayerIds, setActiveLayerIds] = useState<OpenWeatherLayerId[]>([]);
+  const [mapBounds, setMapBounds] = useState<MapBoundingBox | null>(null);
+
+  const placesError = usePlaces(mapInstanceRef, placesLayerRef, mapBounds)
 
   useEffect(() => {
     if (!mapContainerRef.current || typeof window === "undefined") return;
@@ -74,6 +79,10 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
       }).addTo(map);
 
       map.zoomControl.setPosition("topright");
+
+      updateBounds(map, setMapBounds);
+      map.on("moveend", () => updateBounds(map, setMapBounds));
+      map.on("zoomend", () => updateBounds(map, setMapBounds));
 
       // set default active layers
       setActiveLayerIds(["precipitation_new", "clouds_new"])
@@ -126,11 +135,12 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
               L.tileLayer(urlTemplate, {
                 opacity,
                 attribution:
-                    '&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>',
+                    '&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
               }) as TileLayer,
       );
     })();
   }, [weatherLayers, activeLayerIds]);
+
 
   const handleToggleLayer = useCallback(
       (layerId: OpenWeatherLayerId) => {
@@ -163,6 +173,14 @@ const ArcgisLeafletMap: React.FC<ArcgisLeafletMapProps> = ({
               width: "100%",
             }}
         />
+
+        {placesError && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-[1000]">
+              <div className="pointer-events-auto rounded-md bg-red-600/90 px-4 py-2 text-sm font-medium text-white shadow-lg">
+                {placesError}
+              </div>
+            </div>
+        )}
       </div>
   );
 };

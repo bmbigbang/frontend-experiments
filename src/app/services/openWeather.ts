@@ -1,4 +1,4 @@
-import { openWeatherLayerId, OpenWeatherLayerId, OpenWeatherLayerName, WeatherLayerConfig } from "@/app/services/types";
+import { openWeatherLayerId, OpenWeatherLayerId, OpenWeatherLayerName, WeatherLayerConfig } from "@/app/types";
 import type { Map as LeafletMap, TileLayer } from "leaflet";
 
 

@@ -1,5 +1,5 @@
 import React from "react";
-import type { WeatherLayerConfig, OpenWeatherLayerId } from "@/app/services/types";
+import type { WeatherLayerConfig, OpenWeatherLayerId } from "@/app/types";
 
 type WeatherLayerLegendProps = {
   layers: WeatherLayerConfig[];

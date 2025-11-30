@@ -16,3 +16,28 @@ export enum OpenWeatherLayerName {
   "wind_new" = "Wind",
   "temp_new" = "Temperature",
 }
+
+export type ArcgisPlaceCategory = {
+  categoryId: string;
+  label: string;
+};
+
+export type ArcgisPlaceLocation = {
+  x: number; // longitude
+  y: number; // latitude
+};
+
+export type ArcgisPlace = {
+  placeId: string;
+  name: string;
+  location: ArcgisPlaceLocation;
+  categories: ArcgisPlaceCategory[];
+  icon: { url: string };
+};
+
+export type MapBoundingBox = {
+  west: number;
+  east: number;
+  south: number;
+  north: number;
+};
