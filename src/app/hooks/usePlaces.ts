@@ -47,9 +47,13 @@ export const usePlaces = (mapInstanceRef: RefObject<LeafletMap | null>,
           </div>
         `;
 
+        const zoom = map.getZoom();
+        const baseSize = 22;
+        const iconSize = baseSize * Math.pow(1.1, zoom - 13);
+
         const marker = L.marker(
             [lat, lng],
-            {icon: L.icon({iconUrl: place.icon.url})}
+            {icon: L.icon({iconUrl: place.icon.url, iconSize: [iconSize, iconSize], iconAnchor: [iconSize / 2, iconSize / 2] })}
         ).bindPopup(popupHtml);
 
         placesLayerRef.current!.addLayer(marker);

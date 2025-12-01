@@ -3,6 +3,8 @@
 
 A Next.js application that integrates ArcGIS Location Services with OpenWeatherMap to display interactive maps with weather layers and nearby places information.
 
+![img.png](img.png)
+
 ## Features
 
 - **Interactive Map**: Powered by Leaflet with ArcGIS vector basemap layers
@@ -86,9 +88,11 @@ Available layers:
 Layers can be toggled on/off individually
 Default active layers: Precipitation and Clouds
 
+Note that the weather features have larger scales, so they may not be visible when zooming in closer.
+
 ### Places Service
 The Places Service (usePlaces hook and places API) displays nearby points of interest when the map is 
-sufficiently zoomed in such that the distance between edges is below 20,000 meters. This is a requirement of the 
+sufficiently zoomed in such that the distance between edges is below 20km. This is a requirement of the 
 ArcGIS location services endpoint for places. A message is shown to the user if this limit is exceeded.
 
 #### Behaviour
@@ -97,4 +101,5 @@ ArcGIS location services endpoint for places. A message is shown to the user if 
 - Updates automatically when panning or zooming
 - Places are displayed as markers on the map if API key for places service is valid and the zoom condition is met
 - Error banner appears at the top of the map when the zoom level is too high
-- Empty (grey) map is displayed when the API key for base layer is invalid
+
+> **Note**: - Empty (grey) map is displayed when the API key for base layer is invalid.
